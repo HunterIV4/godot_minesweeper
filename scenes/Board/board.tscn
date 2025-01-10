@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dv0wrepsp100q"]
+[gd_scene load_steps=3 format=3 uid="uid://dv0wrepsp100q"]
 
 [ext_resource type="Script" path="res://scenes/Board/board.gd" id="1_m0uy3"]
+[ext_resource type="Resource" uid="uid://l6cia0705m67" path="res://scenes/Tile/default_textures.tres" id="2_hm3wj"]
 
 [node name="Board" type="GridContainer"]
 anchors_preset = 15
@@ -12,3 +13,4 @@ columns = 8
 script = ExtResource("1_m0uy3")
 rows = 8
 cols = 8
+tile_textures = ExtResource("2_hm3wj")

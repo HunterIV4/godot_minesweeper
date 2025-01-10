@@ -7,8 +7,8 @@ enum State {SAFE, CAUTION, MINE}
 var mines_nearby: int = 0
 var state: State = State.SAFE
 
-var is_hidden: bool = true
-var is_flagged: bool = false
+var is_hidden := true
+var is_flagged := false
 
 func _ready() -> void:
 	Events.update_tile_state.connect(_on_update_tile_state)
@@ -73,13 +73,13 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and is_hidden:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
-				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_LEFT)
-				
 				reveal()
 				_update_state()
+				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_LEFT)
+				
 				
 			MOUSE_BUTTON_RIGHT:
-				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_RIGHT)
-				
 				is_flagged = !is_flagged
 				_set_flag_state()
+				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_RIGHT)
+				
