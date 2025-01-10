@@ -1,4 +1,5 @@
 # Autoload: Events
 extends Node
 
-signal tile_pressed(virtual_pos: int, mouse_button: int)
+signal update_tile_state(tile: Tile, new_state: Tile.State)
+signal tile_pressed(tile: Tile, button: MouseButton)

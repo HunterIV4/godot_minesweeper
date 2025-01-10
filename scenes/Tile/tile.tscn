@@ -1,7 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://lasbhi3kt474"]
+[gd_scene load_steps=15 format=3 uid="uid://lasbhi3kt474"]
 
 [ext_resource type="Texture2D" uid="uid://bt7bsduen8vax" path="res://sprites/hidden.png" id="1_fwujc"]
 [ext_resource type="Script" path="res://scenes/Tile/tile.gd" id="2_mevaj"]
+[ext_resource type="Texture2D" uid="uid://bgrfyyewtkka4" path="res://sprites/safe.png" id="3_g26ms"]
+[ext_resource type="Texture2D" uid="uid://dyqjp3p1coasp" path="res://sprites/mine.png" id="4_i6e8c"]
+[ext_resource type="Texture2D" uid="uid://qyy4r73ropla" path="res://sprites/mine_selected.png" id="5_407xe"]
+[ext_resource type="Texture2D" uid="uid://csqf8f3fbjlqo" path="res://sprites/flag.png" id="6_tdd78"]
+[ext_resource type="Texture2D" uid="uid://v6ga6vt4hr3l" path="res://sprites/1.png" id="7_x8qgu"]
+[ext_resource type="Texture2D" uid="uid://d2r3qxq1ejskg" path="res://sprites/2.png" id="8_s23d7"]
+[ext_resource type="Texture2D" uid="uid://qj5vnh7f8p11" path="res://sprites/3.png" id="9_bmrll"]
+[ext_resource type="Texture2D" uid="uid://dh5lgh507k0wc" path="res://sprites/4.png" id="10_17fyq"]
+[ext_resource type="Texture2D" uid="uid://cuboqxcs4ywqq" path="res://sprites/5.png" id="11_it8f2"]
+[ext_resource type="Texture2D" uid="uid://cnvnqh1xdbbj6" path="res://sprites/6.png" id="12_s5br5"]
+[ext_resource type="Texture2D" uid="uid://b3fgigiyq7y2g" path="res://sprites/7.png" id="13_dd8sj"]
+[ext_resource type="Texture2D" uid="uid://cvng8v6tydi6a" path="res://sprites/8.png" id="14_7odho"]
 
 [node name="Tile" type="TextureButton"]
 offset_left = -16.0
@@ -12,5 +24,18 @@ pivot_offset = Vector2(16, 16)
 focus_mode = 1
 texture_normal = ExtResource("1_fwujc")
 script = ExtResource("2_mevaj")
+img_hidden = ExtResource("1_fwujc")
+img_safe = ExtResource("3_g26ms")
+img_mine = ExtResource("4_i6e8c")
+img_mine_selected = ExtResource("5_407xe")
+img_flagged = ExtResource("6_tdd78")
+img_1 = ExtResource("7_x8qgu")
+img_2 = ExtResource("8_s23d7")
+img_3 = ExtResource("9_bmrll")
+img_4 = ExtResource("10_17fyq")
+img_5 = ExtResource("11_it8f2")
+img_6 = ExtResource("12_s5br5")
+img_7 = ExtResource("13_dd8sj")
+img_8 = ExtResource("14_7odho")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]

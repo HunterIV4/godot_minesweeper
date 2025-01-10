@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://dv0wrepsp100q"]
+
+[ext_resource type="Script" path="res://scenes/Board/board.gd" id="1_m0uy3"]
+
+[node name="Board" type="GridContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m0uy3")
