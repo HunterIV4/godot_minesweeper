@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="TileTextures" load_steps=15 format=3 uid="uid://l6cia0705m67"]
+
+[ext_resource type="Script" path="res://scenes/Tile/tile_textures.gd" id="1_lrk1n"]
+[ext_resource type="Texture2D" uid="uid://v6ga6vt4hr3l" path="res://sprites/1.png" id="1_ooltp"]
+[ext_resource type="Texture2D" uid="uid://d2r3qxq1ejskg" path="res://sprites/2.png" id="2_5yqes"]
+[ext_resource type="Texture2D" uid="uid://qj5vnh7f8p11" path="res://sprites/3.png" id="3_eevay"]
+[ext_resource type="Texture2D" uid="uid://dh5lgh507k0wc" path="res://sprites/4.png" id="4_85v6q"]
+[ext_resource type="Texture2D" uid="uid://cuboqxcs4ywqq" path="res://sprites/5.png" id="5_fsb3l"]
+[ext_resource type="Texture2D" uid="uid://cnvnqh1xdbbj6" path="res://sprites/6.png" id="6_3fjgv"]
+[ext_resource type="Texture2D" uid="uid://b3fgigiyq7y2g" path="res://sprites/7.png" id="7_3v7p5"]
+[ext_resource type="Texture2D" uid="uid://cvng8v6tydi6a" path="res://sprites/8.png" id="8_l5cgh"]
+[ext_resource type="Texture2D" uid="uid://csqf8f3fbjlqo" path="res://sprites/flag.png" id="9_utrf2"]
+[ext_resource type="Texture2D" uid="uid://bt7bsduen8vax" path="res://sprites/hidden.png" id="10_k5pfr"]
+[ext_resource type="Texture2D" uid="uid://dyqjp3p1coasp" path="res://sprites/mine.png" id="11_u4sad"]
+[ext_resource type="Texture2D" uid="uid://qyy4r73ropla" path="res://sprites/mine_selected.png" id="12_bj4co"]
+[ext_resource type="Texture2D" uid="uid://bgrfyyewtkka4" path="res://sprites/safe.png" id="13_w0tjp"]
+
+[resource]
+script = ExtResource("1_lrk1n")
+hidden = ExtResource("10_k5pfr")
+safe = ExtResource("13_w0tjp")
+mine = ExtResource("11_u4sad")
+mine_selected = ExtResource("12_bj4co")
+flagged = ExtResource("9_utrf2")
+c_1 = ExtResource("1_ooltp")
+c_2 = ExtResource("2_5yqes")
+c_3 = ExtResource("3_eevay")
+c_4 = ExtResource("4_85v6q")
+c_5 = ExtResource("5_fsb3l")
+c_6 = ExtResource("6_3fjgv")
+c_7 = ExtResource("7_3v7p5")
+c_8 = ExtResource("8_l5cgh")

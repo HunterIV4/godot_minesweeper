@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://cv7v03css43ex"]
+
+[ext_resource type="PackedScene" uid="uid://dv0wrepsp100q" path="res://scenes/Board/board.tscn" id="1_qx2ws"]
+[ext_resource type="Resource" uid="uid://l6cia0705m67" path="res://scenes/Tile/default_textures.tres" id="2_ipto3"]
+
+[node name="BoardTest" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Board" parent="." instance=ExtResource("1_qx2ws")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+tile_textures = ExtResource("2_ipto3")
