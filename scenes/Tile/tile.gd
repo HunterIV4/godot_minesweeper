@@ -9,6 +9,7 @@ var state: State = State.SAFE
 
 var is_hidden := true
 var is_flagged := false
+var grid_position := Vector2.ZERO
 
 func _ready() -> void:
 	Events.update_tile_state.connect(_on_update_tile_state)
@@ -16,11 +17,25 @@ func _ready() -> void:
 
 func reveal() -> void:
 	is_hidden = false
+	_update_state()
 
 
 func set_textures(tile_textures: TileTextures):
 	textures = tile_textures
-	_update_state()	
+	_update_state()
+
+
+func set_grid_position(pos: Vector2):
+	grid_position = pos
+
+
+func set_mines_nearby(mines: int):
+	mines_nearby = mines
+	if mines_nearby == 0:
+		state = State.SAFE
+	else:
+		state = State.CAUTION
+	_update_state()
 
 
 func _on_update_tile_state(tile: Tile, new_state: State) -> void:
