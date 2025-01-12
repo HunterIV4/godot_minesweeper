@@ -15,9 +15,11 @@ func _ready() -> void:
 	Events.update_tile_state.connect(_on_update_tile_state)
 
 
-func reveal() -> void:
+func reveal() -> bool:
 	is_hidden = false
 	_update_state()
+	# Returns true if revealed to be a mine
+	return state == State.MINE
 
 
 func set_textures(tile_textures: TileTextures):

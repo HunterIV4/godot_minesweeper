@@ -56,25 +56,6 @@ func get_viewport_size() -> Vector2:
 	return get_viewport().get_visible_rect().size
 
 
-# add a tile scene onto the given position and set a virtual position
-# store their references as elements of the grid
-func add_tile(pos: Vector2, virtual_pos: int, row: int, column: int) -> void:
-	## create new instance of a tile and add it to the root node
-	var tile_instance: Tile = TILE.instantiate()
-	add_child(tile_instance)
-	
-	## set initial values and states of the tile
-	tile_instance.position = pos
-	tile_instance.virtual_pos = virtual_pos
-	tile_instance.row = row
-	tile_instance.column = column
-	tile_instance.state = states.SAFE
-	tile_instance.texture_normal = HIDDEN
-	
-	## store its reference as an element of the grid
-	grid.append(tile_instance)
-
-
 # update the time elapsed counter
 func update_time() -> void:
 	time_elapsed.text = "Time: %02d:%02d" % [minutes, seconds]
@@ -153,175 +134,10 @@ func generate_tiles(rows: int, columns: int, mines: int) -> void:
 			add_tile(tile_pos, virtual_pos, y, x)
 
 
-# assign random tiles as mines and nearby tiles as caution tiles
-# this will not be done in tile generation, it will be done on the first tile click
-# this will prevent the user from accidentally selecting a mine on the first click
-func assign_tiles(rows: int, columns: int, mines: int, first_tile: Tile) -> void:
-	## randomly select some tiles to be mines
-	## ensure that no tile can be selected more than once
-	## this is done by creating a copy of the grid, shuffling it, then getting elements from the back
-	var grid_copy = grid.duplicate(true)
-	grid_copy.shuffle()
-	
-	## remove the first tile clicked and its nearby tiles from the grid_copy
-	## these tiles won't be selected as mines
-	first_tile.state = states.SAFE
-	grid_copy.erase(first_tile)
-	
-	var nearby_tiles_before: Array[Tile] = get_nearby_tiles(first_tile, total_rows, total_columns)
-	for nearby_tile in nearby_tiles_before:
-		grid_copy.erase(nearby_tile)
-	
-	## prevent mine count from being greater than the maximum tiles or less than 0
-	## there should at least be nine tiles that are not mines, so max is total tiles - 9
-	var mine_count: int = clamp(mines, 0, (rows * columns) - 9)
-	
-	## update mine_guesses and total mines to ensure they match
-	## mine guesses is added here because the user may have flagged a tile before mine assignment
-	mine_guesses += mine_count
-	total_mines = mine_count
-	
-	## assign some tiles as mines
-	for i in range(mine_count):
-		var tile: Tile = grid_copy.pop_back()
-		tile.state = states.MINE
-	
-	## update grid to have caution tiles
-	## tiles with mines next to them should be a caution tile
-	## update 'mine_nearby' for each mine next to the tile
-	for y in range(rows):
-		for x in range(columns):
-			## get current tile of this loop
-			var tile: Tile = grid[x + (y * columns)]
-			
-			## if this tile is a mine, ignore it and immediately skip to the next iteration
-			if tile.state == states.MINE:
-				continue
-			
-			## get the tiles nearby this tile
-			var nearby_tiles_after: Array[Tile] = get_nearby_tiles(tile, rows, columns)
-			
-			## if a nearby tile is a mine, increment 'mines_nearby' and set state to caution
-			for nearby_tile in nearby_tiles_after:
-				if nearby_tile.state == states.MINE:
-					tile.state = states.CAUTION
-					tile.mines_nearby += 1
 
 
-# get the nearby tiles from the given tile
-# use current row and current column of the given tile to find the nearby tiles
-func get_nearby_tiles(tile: Tile, total_rows: int, total_columns: int) -> Array[Tile]:
-	## get row and column of this tile
-	var row: int = tile.row
-	var column: int = tile.column
-	
-	## append nearby tiles' index to this array
-	var nearby_tiles: Array[Tile] = []
-	
-	## all possible nearby tiles, including out-of-bounds tiles
-	var top_left: int = (column - 1) + ((row - 1) * total_columns)
-	var top: int = column + ((row - 1) * total_columns)
-	var top_right: int = (column + 1) + ((row - 1) * total_columns)
-	var left: int = (column - 1) + (row * total_columns)
-	var right: int = (column + 1) + (row * total_columns)
-	var bottom_left: int = (column - 1) + ((row + 1) * total_columns)
-	var bottom: int = column + ((row + 1) * total_columns)
-	var bottom_right: int = (column + 1) + ((row + 1) * total_columns)
-	
-	## the first and last tiles of each nearby row
-	var left_bound: int = row * total_columns
-	var right_bound: int = (row * total_columns) + total_columns - 1
-	var top_left_bound: int = (row - 1) * total_columns
-	var top_right_bound: int = ((row - 1) * total_columns) + total_columns - 1
-	var bottom_left_bound: int = (row + 1) * total_columns
-	var bottom_right_bound: int = ((row + 1) * total_columns) + total_columns - 1
-	
-	## append tiles that are within bounds of the grid
-	if top_left >= 0 and top_left >= top_left_bound:
-		nearby_tiles.append(grid[top_left])
-	if top >= 0:
-		nearby_tiles.append(grid[top])
-	if top_right >= 0 and top_right <= top_right_bound:
-		nearby_tiles.append(grid[top_right])
-	if left >= 0 and left >= left_bound:
-		nearby_tiles.append(grid[left])
-	if right < (total_rows * total_columns) and right <= right_bound:
-		nearby_tiles.append(grid[right])
-	if bottom_left < (total_rows * total_columns) and bottom_left >= bottom_left_bound:
-		nearby_tiles.append(grid[bottom_left])
-	if bottom < (total_rows * total_columns):
-		nearby_tiles.append(grid[bottom])
-	if bottom_right < (total_rows * total_columns) and bottom_right <= bottom_right_bound:
-		nearby_tiles.append(grid[bottom_right])
-	
-	## return the list of possible nearby tiles
-	return nearby_tiles
 
 
-# reveal the tile selected from the grid
-func reveal_tile(tile: Tile) -> void:
-	## after reveal, the tile shouldn't be clickable
-	tile.is_hidden = false
-	
-	## update texture and do actions based on its state
-	match tile.state:
-		states.SAFE:
-			tile.texture_normal = SAFE
-		
-		## if this is a mine tile, end the game and reveal all mines
-		states.MINE:
-			reveal_mines()
-			timer.stop()
-			message.show()
-			message.text = "You Lost!"
-			can_click = false
-			tile.texture_normal = MINE_SELECTED
-		
-		## if this is a caution tile, check the number of bombs nearby
-		## you can probably just check the integer and get the texture using a string
-		## I did it this way since I preload my textures anyways
-		states.CAUTION:
-			match tile.mines_nearby:
-				1:
-					tile.texture_normal = CAUTION_1
-				2:
-					tile.texture_normal = CAUTION_2
-				3:
-					tile.texture_normal = CAUTION_3
-				4:
-					tile.texture_normal = CAUTION_4
-				5:
-					tile.texture_normal = CAUTION_5
-				6:
-					tile.texture_normal = CAUTION_6
-				7:
-					tile.texture_normal = CAUTION_7
-				8:
-					tile.texture_normal = CAUTION_8
-
-
-# reveal any tiles near this tile
-# if a nearby tile is safe, recurse this function on that tile as well
-# continue recursion until a caution tile is found
-func reveal_nearby_tiles(tile: Tile) -> void:
-	## reveal the pressed tile
-	reveal_tile(tile)
-	
-	## if the tile is a mine tile or caution tile, stop recursion
-	if tile.state == states.CAUTION or tile.state == states.MINE:
-		return
-	
-	## otherwise, this tile is a safe tile
-	## get nearby tiles
-	var nearby_tiles: Array[Tile] = get_nearby_tiles(tile, total_rows, total_columns)
-	
-	## for each nearby tile that is hidden, recurse this function for that tile
-	for nearby_tile in nearby_tiles:
-		if nearby_tile.is_hidden == true:
-			## if the tile was flagged, update the mine guess counter
-			if nearby_tile.is_flagged:
-				mine_guesses += 1
-			reveal_nearby_tiles(nearby_tile)
 
 
 # reveal all the mines in the grid
@@ -349,7 +165,7 @@ func check_win() -> bool:
 
 # initialize new game at the start of program
 func _ready() -> void:
-	Events.tile_pressed.connect(on_tile_pressed)
+	#Events.tile_pressed.connect(on_tile_pressed)
 	
 	## set custom game sliders to some default values
 	row_slider.value = 11
@@ -364,55 +180,55 @@ func _ready() -> void:
 
 
 # call when a tile is pressed
-func on_tile_pressed(virtual_pos: int, mouse_button: int) -> void:
-	## get the tile that was just pressed
-	var tile: Tile = grid[virtual_pos]
-	
-	## check if the user can click
-	if can_click:
-		## if right clicked, toggle the tile flagging
-		if mouse_button == MOUSE_BUTTON_RIGHT:
-			if tile.texture_normal == HIDDEN:
-				tile.texture_normal = FLAG
-				tile.is_flagged = true
-				mine_guesses -= 1
-			else:
-				tile.texture_normal = HIDDEN
-				tile.is_flagged = false
-				mine_guesses += 1
-			
-			## update the mine guess counter so it reflets the amount of flags
-			update_mine_guess_counter()
-		
-		## if left clicked, reveal the tile
-		## ensure tile isn't flagged and the user can press tiles
-		elif mouse_button == MOUSE_BUTTON_LEFT and not tile.is_flagged:
-			## if it is the first click, start assigning mines to the tiles
-			## it is done here to ensure that the user's first click will never be a mine
-			if is_first_click:
-				assign_tiles(total_rows, total_columns, total_mines, tile)
-				is_first_click = false
-			
-			## reveal this tile and any nearby tiles that are safe
-			## repeat until it reaches a caution tile
-			reveal_nearby_tiles(tile)
-			
-			## update the mine guess counter after a tile is pressed
-			update_mine_guess_counter()
-			
-			## check if the user has won
-			if check_win():
-				## flag the remaining tiles
-				for mine_tile in grid:
-					if mine_tile.is_hidden:
-						mine_tile.texture_normal = FLAG
-						mine_tile.is_flagged = true
-				
-				mine_guesses = 0
-				message.show()
-				message.text = "You Won!"
-				timer.stop()
-				can_click = false
+#func on_tile_pressed(virtual_pos: int, mouse_button: int) -> void:
+	### get the tile that was just pressed
+	#var tile: Tile = grid[virtual_pos]
+	#
+	### check if the user can click
+	#if can_click:
+		### if right clicked, toggle the tile flagging
+		#if mouse_button == MOUSE_BUTTON_RIGHT:
+			#if tile.texture_normal == HIDDEN:
+				#tile.texture_normal = FLAG
+				#tile.is_flagged = true
+				#mine_guesses -= 1
+			#else:
+				#tile.texture_normal = HIDDEN
+				#tile.is_flagged = false
+				#mine_guesses += 1
+			#
+			### update the mine guess counter so it reflets the amount of flags
+			#update_mine_guess_counter()
+		#
+		### if left clicked, reveal the tile
+		### ensure tile isn't flagged and the user can press tiles
+		#elif mouse_button == MOUSE_BUTTON_LEFT and not tile.is_flagged:
+			### if it is the first click, start assigning mines to the tiles
+			### it is done here to ensure that the user's first click will never be a mine
+			#if is_first_click:
+				#assign_tiles(total_rows, total_columns, total_mines, tile)
+				#is_first_click = false
+			#
+			### reveal this tile and any nearby tiles that are safe
+			### repeat until it reaches a caution tile
+			#reveal_nearby_tiles(tile)
+			#
+			### update the mine guess counter after a tile is pressed
+			#update_mine_guess_counter()
+			#
+			### check if the user has won
+			#if check_win():
+				### flag the remaining tiles
+				#for mine_tile in grid:
+					#if mine_tile.is_hidden:
+						#mine_tile.texture_normal = FLAG
+						#mine_tile.is_flagged = true
+				#
+				#mine_guesses = 0
+				#message.show()
+				#message.text = "You Won!"
+				#timer.stop()
+				#can_click = false
 
 
 func _on_timer_timeout() -> void:

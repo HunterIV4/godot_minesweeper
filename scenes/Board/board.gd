@@ -29,6 +29,18 @@ func add_tile(x: int, y: int) -> void:
 	add_child(new_tile)
 
 
+func count_flagged_and_reveal_all_mines() -> int:
+	var mine_flagged_count:int = 0
+	
+	for tile in get_children():
+		assert(tile is Tile, "count_flagged_and_reveal_all_mines() encountered invalid child of board")
+		if tile.is_hidden:
+			if tile.reveal():
+				if tile.is_flagged:
+					mine_flagged_count += 1
+	return mine_flagged_count
+
+
 func generate_board_mines() -> void:
 	# Calculate a fairly even chance for bombs on any given tile
 	var mine_chance: float = float(max_mines) / float(rows * cols)
@@ -98,8 +110,9 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 		if not tile.is_hidden:	# If player is just marking flags, don't start game yet
 			game_started = true
 			generate_board_mines()
+	
 	# Player revealed tile
-	elif not tile.is_hidden:
+	if not tile.is_hidden:
 		if tile.state == Tile.State.MINE:
 			Events.mine_revealed.emit(tile)
 		elif tile.state == Tile.State.SAFE:

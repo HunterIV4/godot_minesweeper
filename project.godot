@@ -26,6 +26,10 @@ window/size/viewport_width=1280
 window/size/viewport_height=800
 window/stretch/mode="canvas_items"
 
+[dotnet]
+
+project/assembly_name="Minesweeper"
+
 [editor]
 
 version_control/plugin_name="GitPlugin"
