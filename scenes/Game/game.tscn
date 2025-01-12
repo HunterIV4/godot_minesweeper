@@ -7,16 +7,13 @@
 font_size = 24
 
 [sub_resource type="LabelSettings" id="LabelSettings_d4yan"]
-font_size = 32
+font_size = 24
 
 [sub_resource type="LabelSettings" id="LabelSettings_b1gra"]
 font_size = 18
 
 [node name="Game" type="Node"]
 script = ExtResource("1_3dcy1")
-total_rows = 20
-total_columns = 16
-total_mines = 40
 
 [node name="PlayArea" type="Control" parent="."]
 z_index = 2
@@ -52,7 +49,7 @@ offset_left = 48.0
 offset_top = 48.0
 offset_right = 224.0
 offset_bottom = 82.0
-text = "MINES: 999999"
+text = "Mines: 999999"
 label_settings = SubResource("LabelSettings_xgd6b")
 
 [node name="TimeElapsed" type="Label" parent="PlayArea/MainGame"]
@@ -62,7 +59,7 @@ offset_left = 48.0
 offset_top = 96.0
 offset_right = 224.0
 offset_bottom = 130.0
-text = "TIME: 999:99"
+text = "Time: 00:00"
 label_settings = SubResource("LabelSettings_xgd6b")
 
 [node name="Board" parent="PlayArea/MainGame" instance=ExtResource("2_txdcv")]
@@ -75,10 +72,11 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 
 [node name="Resign" type="Button" parent="PlayArea/MainGame"]
+unique_name_in_owner = true
 layout_mode = 0
-offset_left = 551.0
+offset_left = 49.0
 offset_top = 704.0
-offset_right = 711.0
+offset_right = 209.0
 offset_bottom = 752.0
 focus_mode = 1
 theme_override_font_sizes/font_size = 18
@@ -128,7 +126,7 @@ unique_name_in_owner = true
 layout_mode = 0
 offset_left = 48.0
 offset_top = 192.0
-offset_right = 322.0
+offset_right = 254.0
 offset_bottom = 533.0
 text = "MESSAGE"
 label_settings = SubResource("LabelSettings_d4yan")

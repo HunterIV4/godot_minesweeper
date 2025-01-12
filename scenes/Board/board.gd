@@ -155,6 +155,15 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 			Events.mine_revealed.emit(tile)
 		elif tile.state == Tile.State.SAFE:
 			_reveal_neighbors(tile)
+	# Player flagged or unflagged tile
+	elif button == MOUSE_BUTTON_RIGHT:
+		if tile.is_flagged:
+			_flagged_mines += 1
+			Events.tile_flagged.emit()
+		else:
+			_flagged_mines -= 1
+			assert(_flagged_mines >= 0, "_on_tile_pressed caused _flagged mines to go below 0")
+			Events.tile_flagged.emit()
 
 
 func _on_board_updated(new_rows: int, new_cols: int, new_mines: int):
