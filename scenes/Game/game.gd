@@ -1,54 +1,27 @@
-### MINESWEEPER Godot 4.3 example - by Awf Ibrahim (@awfyboy)
+### MINESWEEPER Godot 4.3 example - original by Awf Ibrahim (@awfyboy)
+### Updated and refactored by HunterIV4
+class_name Game
 extends Node
 
-# states for the tiles
-enum states {SAFE, CAUTION, MINE}
-
-# texture resources
-const CAUTION_1 = preload("res://sprites/1.png")
-const CAUTION_2 = preload("res://sprites/2.png")
-const CAUTION_3 = preload("res://sprites/3.png")
-const CAUTION_4 = preload("res://sprites/4.png")
-const CAUTION_5 = preload("res://sprites/5.png")
-const CAUTION_6 = preload("res://sprites/6.png")
-const CAUTION_7 = preload("res://sprites/7.png")
-const CAUTION_8 = preload("res://sprites/8.png")
-const MINE = preload("res://sprites/mine.png")
-const MINE_SELECTED = preload("res://sprites/mine_selected.png")
-const FLAG = preload("res://sprites/flag.png")
-const HIDDEN = preload("res://sprites/hidden.png")
-const SAFE = preload("res://sprites/safe.png")
-
 # node references
-@onready var mine_counter: Label = $Control/MineCounter
-@onready var time_elapsed: Label = $Control/TimeElapsed
-@onready var message: Label = $Control/Message
-@onready var timer: Timer = $Timer
-@onready var row_counter: Label = $Control/RowCounter
-@onready var column_counter: Label = $Control/ColumnCounter
-@onready var mine_counter_2: Label = $Control/MineCounter2
-@onready var row_slider: HSlider = $Control/RowSlider
-@onready var column_slider: HSlider = $Control/ColumnSlider
-@onready var mine_slider: HSlider = $Control/MineSlider
-
-# game related values
-const TILE = preload("res://scenes/Tile/tile.tscn")
-const GRID_SIZE: int = 32
+@onready var mine_counter: Label = %MineCounter
+@onready var time_elapsed: Label = %TimeElapsed
+@onready var message: Label = %Message
+@onready var timer: Timer = %GameTimer
+@onready var row_counter: Label = %RowCounter
+@onready var column_counter: Label = %ColumnCounter
+@onready var max_mine_counter: Label = %MaxMineCounter
+@onready var row_slider: HSlider = %RowSlider
+@onready var column_slider: HSlider = %ColumnSlider
+@onready var mine_slider: HSlider = %MineSlider
+@onready var board: Board = %Board
 
 @export var total_rows: int = 12
 @export var total_columns: int = 8
 @export var total_mines: int = 20
 
-# I'm using a 1D array (which is harder honestly) but you may adapt this to a 2D array
-var grid: Array[Tile] = []
-
-var is_first_click: bool = true
-var can_click: bool = true
 var minutes: int = 0
 var seconds: int = 0
-
-# used for user flagging tiles
-var mine_guesses: int = 0
 
 
 # return the size of the viewport
@@ -56,97 +29,31 @@ func get_viewport_size() -> Vector2:
 	return get_viewport().get_visible_rect().size
 
 
-# update the time elapsed counter
-func update_time() -> void:
-	time_elapsed.text = "Time: %02d:%02d" % [minutes, seconds]
-
-
-# update mine counter
 func update_mine_guess_counter() -> void:
-	## if it is the first click, make the amount of mines hidden
-	## this is done because, mines are generated only after the first click
-	## so edge cases like mines > total tiles need to be checked
-	if is_first_click:
-		mine_counter.text = "Mines: ???"
-	else:
-		mine_counter.text = "Mines: %s" % mine_guesses
+	mine_counter.text = "Mines: %s" % board.get_flagged_mine_count()
 
 
-# update custom game's row counter
 func update_row_custom_counter(value: int) -> void:
 	row_counter.text = "Rows: %s" % value
 
 
-# update custom game's column counter
 func update_column_custom_counter(value: int) -> void:
 	column_counter.text = "Columns: %s" % value
 
 
-# update custom game's row counter
 func update_mine_custom_counter(value: int) -> void:
-	mine_counter_2.text = "Mines: %s" % value
+	max_mine_counter.text = "Mines: %s" % value
 
 
 # clear the grid and create new game
 func reset_game() -> void:
 	## reset default values
-	is_first_click = true
-	can_click = true
 	minutes = 0
 	seconds = 0
-	mine_guesses = 0
+	timer.stop()
+	board.reset()
 	update_mine_guess_counter()
 	message.hide()
-	update_time()
-	timer.start()
-	
-	## ensure that the grid isn't already empty before clearing
-	if grid.size() > 0:
-		for i in range(grid.size()):
-			var tile: Tile = grid[i]
-			tile.queue_free()
-		grid.clear()
-
-
-# create tiles inside of the grid
-func generate_tiles(rows: int, columns: int, mines: int) -> void:
-	## first, reset any existing grid
-	reset_game()
-	
-	## add tiles to the root node and grid
-	## the tile scenes are treated like abstract objects
-	## they will have 'virtual positions' based on the grid
-	## these positions are simply their index position on the grid array
-	## columns for x-axis and rows for y-axis
-	for y in range(rows):
-		for x in range(columns):
-			## calculate offsets for tile position
-			var grid_width: int = GRID_SIZE * columns
-			var grid_height: int = GRID_SIZE * rows
-			var screen_width: int = get_viewport_size().x
-			var screen_height: int = get_viewport_size().y
-			var hor_offset: int = ((screen_width - grid_width)/2)
-			var ver_offset: int = ((screen_height - grid_height)/2)
-			
-			## add new tile and set its position and virtual position
-			var tile_pos: Vector2 = Vector2((GRID_SIZE * x) + hor_offset, (GRID_SIZE * y) + ver_offset)
-			var virtual_pos: int = x + (y * columns)
-			add_tile(tile_pos, virtual_pos, y, x)
-
-
-
-
-
-
-
-
-# reveal all the mines in the grid
-func reveal_mines() -> void:
-	for tile in grid:
-		if tile.state == states.MINE:
-			tile.texture_normal = MINE
-			tile.is_hidden = false
-
 
 # check if the user has won
 # this is done by checking if the remaining tiles are all mines
@@ -230,34 +137,33 @@ func _ready() -> void:
 				#timer.stop()
 				#can_click = false
 
-
 func _on_timer_timeout() -> void:
 	seconds += 1
 	if seconds > 60:
 		minutes += 1
 		seconds = 0
-	update_time()
+	time_elapsed.text = "Time: %02d:%02d" % [minutes, seconds]
 
 
 func _on_easy_pressed() -> void:
 	total_rows = 10
 	total_columns = 10
 	total_mines = 12
-	generate_tiles(total_rows, total_columns, total_mines)
+	#generate_tiles(total_rows, total_columns, total_mines)
 
 
 func _on_normal_pressed() -> void:
 	total_rows = 16
 	total_columns = 12
 	total_mines = 25
-	generate_tiles(total_rows, total_columns, total_mines)
+	#generate_tiles(total_rows, total_columns, total_mines)
 
 
 func _on_hard_pressed() -> void:
 	total_rows = 18
 	total_columns = 16
 	total_mines = 40
-	generate_tiles(total_rows, total_columns, total_mines)
+	#generate_tiles(total_rows, total_columns, total_mines)
 
 
 func _on_custom_game_pressed() -> void:

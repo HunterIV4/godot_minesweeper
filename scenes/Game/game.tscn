@@ -18,8 +18,7 @@ total_rows = 20
 total_columns = 16
 total_mines = 40
 
-[node name="Control" type="Control" parent="."]
-visible = false
+[node name="PlayArea" type="Control" parent="."]
 z_index = 2
 layout_mode = 3
 anchors_preset = 15
@@ -28,7 +27,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Background" type="ColorRect" parent="Control"]
+[node name="Background" type="ColorRect" parent="PlayArea"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -37,7 +36,79 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.242188, 0.242188, 0.242188, 1)
 
-[node name="Easy" type="Button" parent="Control"]
+[node name="MainGame" type="Control" parent="PlayArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MineCounter" type="Label" parent="PlayArea/MainGame"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 48.0
+offset_top = 48.0
+offset_right = 224.0
+offset_bottom = 82.0
+text = "MINES: 999999"
+label_settings = SubResource("LabelSettings_xgd6b")
+
+[node name="TimeElapsed" type="Label" parent="PlayArea/MainGame"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 48.0
+offset_top = 96.0
+offset_right = 224.0
+offset_bottom = 130.0
+text = "TIME: 999:99"
+label_settings = SubResource("LabelSettings_xgd6b")
+
+[node name="Board" parent="PlayArea/MainGame" instance=ExtResource("2_txdcv")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 620.0
+offset_top = 380.0
+offset_right = 620.0
+offset_bottom = 380.0
+
+[node name="Restart" type="Button" parent="PlayArea/MainGame"]
+layout_mode = 0
+offset_left = 436.0
+offset_top = 704.0
+offset_right = 596.0
+offset_bottom = 752.0
+focus_mode = 1
+theme_override_font_sizes/font_size = 18
+text = "Restart
+"
+
+[node name="Resign" type="Button" parent="PlayArea/MainGame"]
+layout_mode = 0
+offset_left = 679.0
+offset_top = 704.0
+offset_right = 839.0
+offset_bottom = 752.0
+focus_mode = 1
+theme_override_font_sizes/font_size = 18
+text = "Resign"
+
+[node name="MenuOptions" type="Control" parent="PlayArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Easy" type="Button" parent="PlayArea/MenuOptions"]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 544.0
@@ -47,7 +118,7 @@ focus_mode = 1
 theme_override_font_sizes/font_size = 18
 text = "Easy"
 
-[node name="Normal" type="Button" parent="Control"]
+[node name="Normal" type="Button" parent="PlayArea/MenuOptions"]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 624.0
@@ -57,7 +128,7 @@ focus_mode = 1
 theme_override_font_sizes/font_size = 18
 text = "Normal"
 
-[node name="Hard" type="Button" parent="Control"]
+[node name="Hard" type="Button" parent="PlayArea/MenuOptions"]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 704.0
@@ -67,35 +138,8 @@ focus_mode = 1
 theme_override_font_sizes/font_size = 18
 text = "Hard"
 
-[node name="CustomGame" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = 1072.0
-offset_top = 704.0
-offset_right = 1248.0
-offset_bottom = 768.0
-focus_mode = 1
-theme_override_font_sizes/font_size = 18
-text = "Custom game"
-
-[node name="MineCounter" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 48.0
-offset_top = 48.0
-offset_right = 224.0
-offset_bottom = 82.0
-text = "MINES: 999999"
-label_settings = SubResource("LabelSettings_xgd6b")
-
-[node name="TimeElapsed" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 48.0
-offset_top = 96.0
-offset_right = 224.0
-offset_bottom = 130.0
-text = "TIME: 999:99"
-label_settings = SubResource("LabelSettings_xgd6b")
-
-[node name="Message" type="Label" parent="Control"]
+[node name="Message" type="Label" parent="PlayArea/MenuOptions"]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 48.0
 offset_top = 192.0
@@ -104,7 +148,8 @@ offset_bottom = 237.0
 text = "MESSAGE"
 label_settings = SubResource("LabelSettings_d4yan")
 
-[node name="RowCounter" type="Label" parent="Control"]
+[node name="RowCounter" type="Label" parent="PlayArea/MenuOptions"]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 1072.0
 offset_top = 448.0
@@ -113,25 +158,8 @@ offset_bottom = 482.0
 text = "Rows: 999"
 label_settings = SubResource("LabelSettings_b1gra")
 
-[node name="ColumnCounter" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 1072.0
-offset_top = 528.0
-offset_right = 1248.0
-offset_bottom = 562.0
-text = "Columns: 999"
-label_settings = SubResource("LabelSettings_b1gra")
-
-[node name="MineCounter2" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 1072.0
-offset_top = 608.0
-offset_right = 1248.0
-offset_bottom = 642.0
-text = "Mines: 999"
-label_settings = SubResource("LabelSettings_b1gra")
-
-[node name="RowSlider" type="HSlider" parent="Control"]
+[node name="RowSlider" type="HSlider" parent="PlayArea/MenuOptions"]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 1072.0
 offset_top = 480.0
@@ -143,7 +171,18 @@ max_value = 24.0
 value = 4.0
 scrollable = false
 
-[node name="ColumnSlider" type="HSlider" parent="Control"]
+[node name="ColumnCounter" type="Label" parent="PlayArea/MenuOptions"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1072.0
+offset_top = 528.0
+offset_right = 1248.0
+offset_bottom = 562.0
+text = "Columns: 999"
+label_settings = SubResource("LabelSettings_b1gra")
+
+[node name="ColumnSlider" type="HSlider" parent="PlayArea/MenuOptions"]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 1072.0
 offset_top = 560.0
@@ -155,7 +194,18 @@ max_value = 24.0
 value = 4.0
 scrollable = false
 
-[node name="MineSlider" type="HSlider" parent="Control"]
+[node name="MaxMineCounter" type="Label" parent="PlayArea/MenuOptions"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1072.0
+offset_top = 608.0
+offset_right = 1248.0
+offset_bottom = 642.0
+text = "Mines: 999"
+label_settings = SubResource("LabelSettings_b1gra")
+
+[node name="MineSlider" type="HSlider" parent="PlayArea/MenuOptions"]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 1072.0
 offset_top = 640.0
@@ -166,15 +216,26 @@ min_value = 5.0
 value = 5.0
 scrollable = false
 
-[node name="Timer" type="Timer" parent="."]
+[node name="StartGame" type="Button" parent="PlayArea/MenuOptions"]
+layout_mode = 0
+offset_left = 1072.0
+offset_top = 704.0
+offset_right = 1248.0
+offset_bottom = 768.0
+focus_mode = 1
+theme_override_font_sizes/font_size = 18
+text = "Start Game"
 
-[node name="Board" parent="." instance=ExtResource("2_txdcv")]
+[node name="GameTimer" type="Timer" parent="."]
+unique_name_in_owner = true
 
-[connection signal="pressed" from="Control/Easy" to="." method="_on_easy_pressed"]
-[connection signal="pressed" from="Control/Normal" to="." method="_on_normal_pressed"]
-[connection signal="pressed" from="Control/Hard" to="." method="_on_hard_pressed"]
-[connection signal="pressed" from="Control/CustomGame" to="." method="_on_custom_game_pressed"]
-[connection signal="value_changed" from="Control/RowSlider" to="." method="_on_row_slider_value_changed"]
-[connection signal="value_changed" from="Control/ColumnSlider" to="." method="_on_column_slider_value_changed"]
-[connection signal="value_changed" from="Control/MineSlider" to="." method="_on_mine_slider_value_changed"]
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="pressed" from="PlayArea/MainGame/Restart" to="." method="_on_easy_pressed"]
+[connection signal="pressed" from="PlayArea/MainGame/Resign" to="." method="_on_easy_pressed"]
+[connection signal="pressed" from="PlayArea/MenuOptions/Easy" to="." method="_on_easy_pressed"]
+[connection signal="pressed" from="PlayArea/MenuOptions/Normal" to="." method="_on_normal_pressed"]
+[connection signal="pressed" from="PlayArea/MenuOptions/Hard" to="." method="_on_hard_pressed"]
+[connection signal="value_changed" from="PlayArea/MenuOptions/RowSlider" to="." method="_on_row_slider_value_changed"]
+[connection signal="value_changed" from="PlayArea/MenuOptions/ColumnSlider" to="." method="_on_column_slider_value_changed"]
+[connection signal="value_changed" from="PlayArea/MenuOptions/MineSlider" to="." method="_on_mine_slider_value_changed"]
+[connection signal="pressed" from="PlayArea/MenuOptions/StartGame" to="." method="_on_custom_game_pressed"]
+[connection signal="timeout" from="GameTimer" to="." method="_on_timer_timeout"]
