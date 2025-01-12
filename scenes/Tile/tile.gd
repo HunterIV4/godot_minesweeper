@@ -103,8 +103,7 @@ func _gui_input(event: InputEvent) -> void:
 				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_LEFT)
 				if mine_found:
 					Events.mine_revealed.emit()
-				
-				
+			
 			MOUSE_BUTTON_RIGHT:
 				is_flagged = !is_flagged
 				_set_flag_state()
