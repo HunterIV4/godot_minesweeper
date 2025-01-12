@@ -13,9 +13,8 @@ var grid_position := Vector2.ZERO
 
 var _disabled := false
 
-func _ready() -> void:
-	Events.update_tile_state.connect(_on_update_tile_state)
-
+## Modify State
+## --------------------------
 
 func reveal() -> bool:
 	is_hidden = false
@@ -24,37 +23,12 @@ func reveal() -> bool:
 	return state == State.MINE
 
 
-func set_textures(tile_textures: TileTextures):
-	textures = tile_textures
-	_update_state()
-
-
-func set_grid_position(pos: Vector2):
-	grid_position = pos
-
-
-func set_mines_nearby(mines: int):
-	mines_nearby = mines
-	if mines_nearby == 0:
-		state = State.SAFE
-	else:
-		state = State.CAUTION
-	_update_state()
-
-
 func enable_input() -> void:
 	_disabled = false
 
 
 func disable_input() -> void:
 	_disabled = true
-
-
-func _on_update_tile_state(tile: Tile, new_state: State) -> void:
-	if tile != self: return
-	state = new_state
-	
-	_update_state()
 
 
 func _update_state() -> void:
@@ -95,6 +69,30 @@ func _set_caution_state() -> void:
 		7: texture_normal = textures.c_7
 		8: texture_normal = textures.c_8
 
+
+## Setters
+## --------------------------
+
+func set_textures(tile_textures: TileTextures):
+	textures = tile_textures
+	_update_state()
+
+
+func set_grid_position(pos: Vector2):
+	grid_position = pos
+
+
+func set_mines_nearby(mines: int):
+	mines_nearby = mines
+	if mines_nearby == 0:
+		state = State.SAFE
+	else:
+		state = State.CAUTION
+	_update_state()
+
+
+## Input Handling
+## --------------------------
 
 func _gui_input(event: InputEvent) -> void:
 	if not _disabled and event is InputEventMouseButton and event.pressed and is_hidden:

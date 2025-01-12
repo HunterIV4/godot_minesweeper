@@ -22,6 +22,8 @@ extends Node
 var minutes: int = 0
 var seconds: int = 0
 
+## Core Game Logic
+## --------------------------
 
 func _ready() -> void:
 	Events.mine_revealed.connect(_on_mine_revealed)
@@ -38,22 +40,6 @@ func _ready() -> void:
 	update_mine_guess_counter()
 
 
-func update_mine_guess_counter() -> void:
-	mine_counter.text = "Mines: %s" % (board.max_mines - board.get_flagged_mine_count())
-
-
-func update_row_custom_counter(value: int) -> void:
-	row_counter.text = "Rows: %s" % value
-
-
-func update_column_custom_counter(value: int) -> void:
-	column_counter.text = "Columns: %s" % value
-
-
-func update_mine_custom_counter(value: int) -> void:
-	max_mine_counter.text = "Mines: %s" % value
-
-
 func reset_game() -> void:
 	minutes = 0
 	seconds = 0
@@ -62,6 +48,8 @@ func reset_game() -> void:
 	update_mine_guess_counter()
 	message.hide()
 
+## Game Events
+## --------------------------
 
 func _on_mine_revealed() -> void:
 	timer.stop()
@@ -98,6 +86,22 @@ func _on_timer_timeout() -> void:
 		seconds = 0
 	time_elapsed.text = "Time: %02d:%02d" % [minutes, seconds]
 
+## UI Controls
+## --------------------------
+
+func _on_start_game_pressed() -> void:
+	Events.board_updated.emit(row_slider.value, column_slider.value, mine_slider.value)
+	update_mine_guess_counter()
+	main_game.show()
+	resign.show()
+	menu_options.hide()
+	message.hide()
+	timer.start()
+
+
+func _on_resign_pressed() -> void:
+	_on_mine_revealed()
+
 
 func _on_easy_pressed() -> void:
 	row_slider.value = 10
@@ -117,16 +121,6 @@ func _on_hard_pressed() -> void:
 	mine_slider.value = 40
 
 
-func _on_start_game_pressed() -> void:
-	Events.board_updated.emit(row_slider.value, column_slider.value, mine_slider.value)
-	update_mine_guess_counter()
-	main_game.show()
-	resign.show()
-	menu_options.hide()
-	message.hide()
-	timer.start()
-
-
 func _on_row_slider_value_changed(value: float) -> void:
 	update_row_custom_counter(value)
 
@@ -138,6 +132,20 @@ func _on_column_slider_value_changed(value: float) -> void:
 func _on_mine_slider_value_changed(value: float) -> void:
 	update_mine_custom_counter(value)
 
+## Display functions
+## --------------------------
 
-func _on_resign_pressed() -> void:
-	_on_mine_revealed()
+func update_mine_guess_counter() -> void:
+	mine_counter.text = "Mines: %s" % (board.max_mines - board.get_flagged_mine_count())
+
+
+func update_row_custom_counter(value: int) -> void:
+	row_counter.text = "Rows: %s" % value
+
+
+func update_column_custom_counter(value: int) -> void:
+	column_counter.text = "Columns: %s" % value
+
+
+func update_mine_custom_counter(value: int) -> void:
+	max_mine_counter.text = "Mines: %s" % value

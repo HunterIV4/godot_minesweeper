@@ -15,6 +15,8 @@ func _ready() -> void:
 	Events.board_updated.connect(_on_board_updated)
 	reset()
 
+## Utility
+## --------------------------
 
 func enable_tiles() -> void:
 	for tile in get_children():
@@ -30,6 +32,9 @@ func get_flagged_mine_count() -> int:
 	return _flagged_mines
 
 
+## Board Generation
+## --------------------------
+
 func generate_board_base() -> void:
 	var total_tiles = rows * cols
 	for y in rows:
@@ -42,18 +47,6 @@ func add_tile(x: int, y: int) -> void:
 	new_tile.set_textures(tile_textures)
 	new_tile.set_grid_position(Vector2(x, y))
 	add_child(new_tile)
-
-
-func count_flagged_and_reveal_all_mines() -> int:
-	var mine_flagged_count:int = 0
-	
-	for tile in get_children():
-		assert(tile is Tile, "count_flagged_and_reveal_all_mines() encountered invalid child of board")
-		if tile.is_hidden:
-			if tile.reveal():
-				if tile.is_flagged:
-					mine_flagged_count += 1
-	return mine_flagged_count
 
 
 func generate_board_mines() -> void:
@@ -78,27 +71,6 @@ func generate_board_mines() -> void:
 		if tile.state != Tile.State.MINE:
 			var mines_nearby := _count_adjacent_mines(tile, mined_tiles)
 			tile.set_mines_nearby(mines_nearby)
-
-
-func reset() -> void:
-	_game_started = false
-	columns = cols
-	_current_mines = 0
-	_flagged_mines = 0
-	# Clear existing board if needed
-	for tile in get_children():
-		tile.queue_free()
-	
-	generate_board_base()
-
-
-func check_win() -> bool:
-	for tile in get_children():
-		# If the tile isn't revealed and is both a flagged tile that is a mine,
-		# continue checking, otherwise it's not a win
-		if tile.hidden and not (tile.is_flagged and tile.state != Tile.State.MINE):
-			return false
-	return true
 
 
 func _count_adjacent_mines(tile: Tile, mined_tiles: Array[Tile]) -> int:
@@ -130,6 +102,45 @@ func get_tile_at_position(pos: Vector2) -> Tile:
 			return tile
 	return null
 
+
+## Game End
+## --------------------------
+
+func count_flagged_and_reveal_all_mines() -> int:
+	var mine_flagged_count:int = 0
+	
+	for tile in get_children():
+		assert(tile is Tile, "count_flagged_and_reveal_all_mines() encountered invalid child of board")
+		if tile.is_hidden:
+			if tile.reveal():
+				if tile.is_flagged:
+					mine_flagged_count += 1
+	return mine_flagged_count
+
+
+func reset() -> void:
+	_game_started = false
+	columns = cols
+	_current_mines = 0
+	_flagged_mines = 0
+	# Clear existing board if needed
+	for tile in get_children():
+		tile.queue_free()
+	
+	generate_board_base()
+
+
+func check_win() -> bool:
+	for tile in get_children():
+		# If the tile isn't revealed and is both a flagged tile that is a mine,
+		# continue checking, otherwise it's not a win
+		if tile.hidden and not (tile.is_flagged and tile.state != Tile.State.MINE):
+			return false
+	return true
+
+
+## State Update
+## --------------------------
 
 func _reveal_neighbors(tile: Tile) -> void:
 	var neighbors = _get_neighbors(tile)

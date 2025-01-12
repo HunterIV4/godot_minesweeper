@@ -1,10 +1,9 @@
-# Autoload: Events
+## Autoload: Events
 extends Node
 
-# Gameplay board signals
-signal update_tile_state(tile: Tile, new_state: Tile.State)
+## Gameplay Signals
+## --------------------------
 signal tile_pressed(tile: Tile, button: MouseButton)
 signal tile_flagged()
 signal mine_revealed()
-
 signal board_updated(rows: int, cols: int, mines: int)
