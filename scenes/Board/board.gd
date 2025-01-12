@@ -16,6 +16,16 @@ func _ready() -> void:
 	reset()
 
 
+func enable_tiles() -> void:
+	for tile in get_children():
+		tile.enable_input()
+
+
+func disable_tiles() -> void:
+	for tile in get_children():
+		tile.disable_input()
+
+
 func get_flagged_mine_count() -> int:
 	return _flagged_mines
 
@@ -71,6 +81,7 @@ func generate_board_mines() -> void:
 
 
 func reset() -> void:
+	_game_started = false
 	columns = cols
 	_current_mines = 0
 	_flagged_mines = 0
@@ -88,6 +99,7 @@ func check_win() -> bool:
 		if tile.hidden and not (tile.is_flagged and tile.state != Tile.State.MINE):
 			return false
 	return true
+
 
 func _count_adjacent_mines(tile: Tile, mined_tiles: Array[Tile]) -> int:
 	var count = 0

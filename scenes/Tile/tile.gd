@@ -11,6 +11,8 @@ var is_hidden := true
 var is_flagged := false
 var grid_position := Vector2.ZERO
 
+var _disabled := false
+
 func _ready() -> void:
 	Events.update_tile_state.connect(_on_update_tile_state)
 
@@ -38,6 +40,14 @@ func set_mines_nearby(mines: int):
 	else:
 		state = State.CAUTION
 	_update_state()
+
+
+func enable_input() -> void:
+	_disabled = false
+
+
+func disable_input() -> void:
+	_disabled = true
 
 
 func _on_update_tile_state(tile: Tile, new_state: State) -> void:
@@ -87,12 +97,14 @@ func _set_caution_state() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and is_hidden:
+	if not _disabled and event is InputEventMouseButton and event.pressed and is_hidden:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
-				reveal()
+				var mine_found = reveal()
 				_update_state()
 				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_LEFT)
+				if mine_found:
+					Events.mine_revealed.emit()
 				
 				
 			MOUSE_BUTTON_RIGHT:

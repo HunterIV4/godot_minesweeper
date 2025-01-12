@@ -3,7 +3,6 @@
 class_name Game
 extends Node
 
-# node references
 @onready var mine_counter: Label = %MineCounter
 @onready var time_elapsed: Label = %TimeElapsed
 @onready var message: Label = %Message
@@ -15,6 +14,9 @@ extends Node
 @onready var column_slider: HSlider = %ColumnSlider
 @onready var mine_slider: HSlider = %MineSlider
 @onready var board: Board = %Board
+
+@onready var main_game: Control = %MainGame
+@onready var menu_options: Control = %MenuOptions
 
 @export var total_rows: int = 12
 @export var total_columns: int = 8
@@ -55,24 +57,10 @@ func reset_game() -> void:
 	update_mine_guess_counter()
 	message.hide()
 
-# check if the user has won
-# this is done by checking if the remaining tiles are all mines
-func check_win() -> bool:
-	## get the remaining tiles
-	var remaining_tiles: int = 0
-	for tile in grid:
-		if tile.is_hidden:
-			remaining_tiles += 1
-	
-	## check if the remaining tiles and total mines are equal
-	if remaining_tiles == total_mines:
-		return true
-	return false
-
 
 # initialize new game at the start of program
 func _ready() -> void:
-	#Events.tile_pressed.connect(on_tile_pressed)
+	Events.mine_revealed.connect(_on_mine_revealed)
 	
 	## set custom game sliders to some default values
 	row_slider.value = 11
@@ -84,6 +72,14 @@ func _ready() -> void:
 	
 	## start a new easy game
 	_on_easy_pressed()
+
+
+func _on_mine_revealed() -> void:
+	menu_options.show()
+	board.disable_tiles()
+	var correctly_flagged := board.count_flagged_and_reveal_all_mines()
+	
+	message.text = "Game Over! You correctly identified %d mines out of %d. Play again?" % [correctly_flagged, board.max_mines]
 
 
 # call when a tile is pressed
@@ -166,11 +162,10 @@ func _on_hard_pressed() -> void:
 	#generate_tiles(total_rows, total_columns, total_mines)
 
 
-func _on_custom_game_pressed() -> void:
-	total_rows = row_slider.value
-	total_columns = column_slider.value
-	total_mines = mine_slider.value
-	generate_tiles(total_rows, total_columns, total_mines)
+func _on_start_game_pressed() -> void:
+	Events.board_updated.emit(row_slider.value, column_slider.value, mine_slider.value)
+	main_game.show()
+	menu_options.hide()
 
 
 func _on_row_slider_value_changed(value: float) -> void:
@@ -183,3 +178,7 @@ func _on_column_slider_value_changed(value: float) -> void:
 
 func _on_mine_slider_value_changed(value: float) -> void:
 	update_mine_custom_counter(value)
+
+
+func _on_resign_pressed() -> void:
+	_on_mine_revealed()
