@@ -13,6 +13,7 @@ var _game_started := false
 func _ready() -> void:
 	Events.tile_pressed.connect(_on_tile_pressed)
 	Events.board_updated.connect(_on_board_updated)
+	Events.mine_revealed.connect(_on_mine_revealed)
 	reset()
 
 ## Utility
@@ -106,13 +107,17 @@ func get_tile_at_position(pos: Vector2) -> Tile:
 ## Game End
 ## --------------------------
 
-func count_flagged_and_reveal_all_mines() -> int:
+func reveal() -> void:
+	for tile in get_children():
+		tile.reveal()
+
+func count_flagged_mines() -> int:
 	var mine_flagged_count:int = 0
 	
 	for tile in get_children():
 		assert(tile is Tile, "count_flagged_and_reveal_all_mines() encountered invalid child of board")
 		if tile.is_hidden:
-			if tile.reveal():
+			if tile.state == Tile.State.MINE:
 				if tile.is_flagged:
 					mine_flagged_count += 1
 	return mine_flagged_count
@@ -126,7 +131,6 @@ func reset() -> void:
 	# Clear existing board if needed
 	for tile in get_children():
 		tile.queue_free()
-	
 	generate_board_base()
 
 
@@ -137,6 +141,11 @@ func check_win() -> bool:
 		if tile.hidden and not (tile.is_flagged and tile.state != Tile.State.MINE):
 			return false
 	return true
+
+
+func _on_mine_revealed() -> void:
+	var correctly_flagged = count_flagged_mines()
+	Events.game_ended.emit(correctly_flagged, max_mines)
 
 
 ## State Update
@@ -162,6 +171,10 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 	
 	# Player revealed tile
 	if not tile.is_hidden:
+		if tile.is_flagged:
+			tile.is_flagged = false
+			_flagged_mines -= 1
+			Events.tile_flagged.emit()
 		if tile.state == Tile.State.MINE:
 			Events.mine_revealed.emit(tile)
 		elif tile.state == Tile.State.SAFE:

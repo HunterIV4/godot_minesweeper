@@ -16,11 +16,9 @@ var _disabled := false
 ## Modify State
 ## --------------------------
 
-func reveal() -> bool:
+func reveal() -> void:
 	is_hidden = false
 	_update_state()
-	# Returns true if revealed to be a mine
-	return state == State.MINE
 
 
 func enable_input() -> void:
@@ -97,12 +95,13 @@ func set_mines_nearby(mines: int):
 func _gui_input(event: InputEvent) -> void:
 	if not _disabled and event is InputEventMouseButton and event.pressed and is_hidden:
 		match event.button_index:
-			MOUSE_BUTTON_LEFT:
-				var mine_found = reveal()
+			MOUSE_BUTTON_LEFT:					
+				reveal()
 				_update_state()
 				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_LEFT)
-				if mine_found:
+				if state == State.MINE:
 					Events.mine_revealed.emit()
+				
 			
 			MOUSE_BUTTON_RIGHT:
 				is_flagged = !is_flagged
