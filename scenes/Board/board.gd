@@ -65,11 +65,11 @@ func generate_board_mines() -> void:
 				continue
 			elif randf() <= mine_chance:
 				_current_mines += 1
-				tile.state = Tile.State.MINE
+				tile.set_state_mine()
 				mined_tiles.append(tile)
 	
 	for tile in get_children():
-		if tile.state != Tile.State.MINE:
+		if not tile.is_mine():
 			var mines_nearby := _count_adjacent_mines(tile, mined_tiles)
 			tile.set_mines_nearby(mines_nearby)
 
@@ -111,13 +111,18 @@ func reveal() -> void:
 	for tile in get_children():
 		tile.reveal()
 
+func reveal_mines() -> void:
+	for tile in get_children():
+		if tile.is_hidden and tile.is_mine():
+			pass
+
 func count_flagged_mines() -> int:
 	var mine_flagged_count:int = 0
 	
 	for tile in get_children():
 		assert(tile is Tile, "count_flagged_and_reveal_all_mines() encountered invalid child of board")
 		if tile.is_hidden:
-			if tile.state == Tile.State.MINE:
+			if tile.is_mine():
 				if tile.is_flagged:
 					mine_flagged_count += 1
 	return mine_flagged_count
@@ -138,7 +143,7 @@ func check_win() -> bool:
 	for tile in get_children():
 		# If the tile isn't revealed and is both a flagged tile that is a mine,
 		# continue checking, otherwise it's not a win
-		if tile.hidden and not (tile.is_flagged and tile.state != Tile.State.MINE):
+		if tile.hidden and not (tile.is_flagged and not tile.is_mine()):
 			return false
 	return true
 
@@ -158,7 +163,7 @@ func _reveal_neighbors(tile: Tile) -> void:
 		if neighbor.is_hidden:
 			neighbor.reveal()
 			
-			if neighbor.state == Tile.State.SAFE:
+			if neighbor.is_safe():
 				_reveal_neighbors(neighbor)
 
 
@@ -175,9 +180,9 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 			tile.is_flagged = false
 			_flagged_mines -= 1
 			Events.tile_flagged.emit()
-		if tile.state == Tile.State.MINE:
+		if tile.is_mine():
 			Events.mine_revealed.emit(tile)
-		elif tile.state == Tile.State.SAFE:
+		elif tile.is_safe():
 			_reveal_neighbors(tile)
 	# Player flagged or unflagged tile
 	elif button == MOUSE_BUTTON_RIGHT:

@@ -68,8 +68,34 @@ func _set_caution_state() -> void:
 		8: texture_normal = textures.c_8
 
 
+## Getters
+## --------------------------
+func is_mine() -> bool:
+	return state == State.MINE
+
+
+func is_safe() -> bool:
+	return state == State.SAFE
+
+
+func is_caution() -> bool:
+	return state == State.CAUTION
+
+
 ## Setters
 ## --------------------------
+
+func set_state_mine() -> void:
+	state = State.MINE
+
+
+func set_state_caution() -> void:
+	state = State.CAUTION
+
+
+func set_state_safe() -> void:
+	state = State.SAFE
+
 
 func set_textures(tile_textures: TileTextures):
 	textures = tile_textures
