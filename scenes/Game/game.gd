@@ -11,11 +11,8 @@ var seconds: int = 0
 func _ready() -> void:
 	Events.reset_game.connect(_on_reset_game)
 	Events.game_ended.connect(_on_game_ended)
-	
 
-## Game Events
-## --------------------------
-
+#region Game Events
 func _on_game_ended(correctly_flagged: int, max_mines: int):
 	var message := ""
 	# Game won if equal
@@ -40,3 +37,4 @@ func _on_game_timer_timeout() -> void:
 		minutes += 1
 		seconds = 0
 	Events.time_updated.emit(minutes, seconds)
+#endregion

@@ -16,9 +16,7 @@ func _ready() -> void:
 	Events.mine_revealed.connect(_on_mine_revealed)
 	reset() # Set to initial state
 
-## Utility
-## --------------------------
-
+#region Utility
 func enable_tiles() -> void:
 	for tile in get_children():
 		tile.enable_input()
@@ -31,11 +29,9 @@ func disable_tiles() -> void:
 
 func get_flagged_mine_count() -> int:
 	return _flagged_mines
+#endregion
 
-
-## Board Generation
-## --------------------------
-
+#region Board Generation
 func generate_board_base() -> void:
 	# While the board uses a grid, get_children() returns a 1D array
 	# Each tile keeps track of its x, y coordinates to make
@@ -117,12 +113,9 @@ func get_tile_at_position(pos: Vector2) -> Tile:
 		if tile.grid_position == pos:
 			return tile
 	return null
+#endregion
 
-
-## Game End
-## --------------------------
-
-
+#region Game End
 func reveal_mines() -> void:
 	# Reveals all mines, used for game end, to show
 	# user how the board looked.
@@ -179,11 +172,9 @@ func _on_mine_revealed() -> void:
 	var correctly_flagged = count_flagged_mines()
 	reveal_mines()
 	Events.game_ended.emit(correctly_flagged, max_mines)
+#endregion
 
-
-## State Update
-## --------------------------
-
+#region State Update
 func _reveal_neighbors(tile: Tile) -> void:
 	# Recursive helper function used to reveal all connected safe tiles.
 	var neighbors = _get_neighbors(tile)
@@ -236,3 +227,4 @@ func _on_board_updated(new_rows: int, new_cols: int, new_mines: int):
 	cols = new_cols
 	max_mines = new_mines
 	reset()
+#endregion

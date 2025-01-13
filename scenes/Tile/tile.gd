@@ -13,9 +13,7 @@ var grid_position := Vector2.ZERO
 
 var _disabled := false
 
-## Modify State
-## --------------------------
-
+#region Modify State
 func reveal() -> void:
 	is_hidden = false
 	_update_state()
@@ -71,10 +69,9 @@ func _set_caution_state() -> void:
 		6: texture_normal = textures.c_6
 		7: texture_normal = textures.c_7
 		8: texture_normal = textures.c_8
+#endregion
 
-
-## Getters
-## --------------------------
+#region Getters
 func is_mine() -> bool:
 	return state == State.MINE
 
@@ -85,11 +82,9 @@ func is_safe() -> bool:
 
 func is_caution() -> bool:
 	return state == State.CAUTION
+#endregion
 
-
-## Setters
-## --------------------------
-
+#region Setters
 func set_state_mine() -> void:
 	state = State.MINE
 
@@ -118,11 +113,9 @@ func set_mines_nearby(mines: int):
 	else:
 		state = State.CAUTION
 	_update_state()
+#endregion
 
-
-## Input Handling
-## --------------------------
-
+#region Input Handling
 func _gui_input(event: InputEvent) -> void:
 	if not _disabled and event is InputEventMouseButton and event.pressed and is_hidden:
 		match event.button_index:
@@ -139,3 +132,4 @@ func _gui_input(event: InputEvent) -> void:
 				set_flag_state(new_state)
 				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_RIGHT)
 				
+#endregion

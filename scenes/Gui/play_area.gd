@@ -41,9 +41,7 @@ func _ready() -> void:
 	_set_difficulty(DIFFICULTY_DEFAULT)
 	update_mine_guess_counter()
 
-## Game Events
-## --------------------------
-
+#region Game Events
 func _on_game_over(msg: String) -> void:
 	menu_options.show()
 	board.disable_tiles()
@@ -64,11 +62,9 @@ func _on_reset_game() -> void:
 
 func _on_tile_flagged() -> void:
 	update_mine_guess_counter()
+#endregion
 
-
-## UI Controls
-## --------------------------
-
+#region UI Controls
 func _on_start_game_pressed() -> void:
 	Events.board_updated.emit(row_slider.value, column_slider.value, mine_slider.value)
 	Events.reset_game.emit()
@@ -111,10 +107,9 @@ func _on_column_slider_value_changed(value: float) -> void:
 
 func _on_mine_slider_value_changed(value: float) -> void:
 	max_mine_counter.text = "Mines: %s" % value
+#endregion
 
-## Visual Updates
-## --------------------------
-
+#region Visual Updates
 func update_mine_guess_counter() -> void:
 	var mine_count = max(board.max_mines - board.get_flagged_mine_count(), 0)
 	mine_counter.text = "Mines: %s" % (mine_count)
@@ -122,3 +117,4 @@ func update_mine_guess_counter() -> void:
 
 func _on_time_updated(minutes: int, seconds: int) -> void:
 	time_elapsed.text = "Time: %02d:%02d" % [minutes, seconds]
+#endregion
