@@ -8,7 +8,6 @@ signal tile_flagged()
 signal reset_game()
 signal mine_revealed()
 signal game_ended(correctly_flagged: int, max_mines: int)
-#signal all_mines_flagged()
 
 ## UI Signals
 ## --------------------------

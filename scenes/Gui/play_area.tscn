@@ -1,7 +1,26 @@
-[gd_scene load_steps=6 format=3 uid="uid://d31qsi5m1v5pg"]
+[gd_scene load_steps=10 format=3 uid="uid://d31qsi5m1v5pg"]
 
 [ext_resource type="Script" path="res://scenes/Gui/play_area.gd" id="1_hskyp"]
 [ext_resource type="PackedScene" uid="uid://dv0wrepsp100q" path="res://scenes/Board/board.tscn" id="2_560al"]
+[ext_resource type="Script" path="res://scenes/Gui/difficulty.gd" id="2_s5c1p"]
+
+[sub_resource type="Resource" id="Resource_f3bwo"]
+script = ExtResource("2_s5c1p")
+rows = 10
+columns = 10
+mines = 12
+
+[sub_resource type="Resource" id="Resource_meqml"]
+script = ExtResource("2_s5c1p")
+rows = 16
+columns = 12
+mines = 25
+
+[sub_resource type="Resource" id="Resource_inw24"]
+script = ExtResource("2_s5c1p")
+rows = 18
+columns = 16
+mines = 40
 
 [sub_resource type="LabelSettings" id="LabelSettings_xgd6b"]
 font_size = 24
@@ -21,6 +40,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_hskyp")
+difficulty_easy = SubResource("Resource_f3bwo")
+difficulty_normal = SubResource("Resource_meqml")
+difficulty_hard = SubResource("Resource_inw24")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -121,6 +143,7 @@ text = "Hard"
 
 [node name="Message" type="Label" parent="MenuOptions"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 0
 offset_left = 48.0
 offset_top = 192.0

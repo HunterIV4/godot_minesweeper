@@ -3,13 +3,10 @@
 class_name Game
 extends Node
 
-#@export var default
-
 @onready var timer: Timer = %GameTimer
 
 var minutes: int = 0
 var seconds: int = 0
-
 
 func _ready() -> void:
 	Events.reset_game.connect(_on_reset_game)

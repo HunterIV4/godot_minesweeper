@@ -14,7 +14,7 @@ func _ready() -> void:
 	Events.tile_pressed.connect(_on_tile_pressed)
 	Events.board_updated.connect(_on_board_updated)
 	Events.mine_revealed.connect(_on_mine_revealed)
-	reset()
+	reset() # Set to initial state
 
 ## Utility
 ## --------------------------
@@ -37,6 +37,9 @@ func get_flagged_mine_count() -> int:
 ## --------------------------
 
 func generate_board_base() -> void:
+	# While the board uses a grid, get_children() returns a 1D array
+	# Each tile keeps track of its x, y coordinates to make
+	# handling the grid easier.
 	var total_tiles = rows * cols
 	for y in rows:
 		for x in cols:
@@ -63,11 +66,15 @@ func generate_board_mines() -> void:
 				break
 			elif not tile.is_hidden:	# Skip unhidden tiles (usually initial tile)
 				continue
+			# The randf() function generates a float from 0 to 1,
+			# checking if the number is less than or equal to is
+			# equivalent to percent chance
 			elif randf() <= mine_chance:
 				_current_mines += 1
 				tile.set_state_mine()
 				mined_tiles.append(tile)
 	
+	# Go through again and set caution states after mines have been generated
 	for tile in get_children():
 		if not tile.is_mine():
 			var mines_nearby := _count_adjacent_mines(tile, mined_tiles)
@@ -75,6 +82,7 @@ func generate_board_mines() -> void:
 
 
 func _count_adjacent_mines(tile: Tile, mined_tiles: Array[Tile]) -> int:
+	# Helper function to determine caution states
 	var count = 0
 	for neighbor in _get_neighbors(tile):
 		if mined_tiles.has(neighbor):
@@ -83,6 +91,12 @@ func _count_adjacent_mines(tile: Tile, mined_tiles: Array[Tile]) -> int:
 
 
 func _get_neighbors(tile: Tile) -> Array[Tile]:
+	# Returns an array of all tiles that are neighbors of
+	# the specified tile. Direction specifies 8 options, but
+	# not all tiles will have 8 neighbors. The reason this
+	# works is because invalid positions (indexes outside
+	# the size of the grid) will simply return null,
+	# which is ignored.
 	var neighbors: Array[Tile] = []
 	var directions = [
 		Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
@@ -98,6 +112,7 @@ func _get_neighbors(tile: Tile) -> Array[Tile]:
 
 
 func get_tile_at_position(pos: Vector2) -> Tile:
+	# Null state means the position does not exist on the board
 	for tile in get_children():
 		if tile.grid_position == pos:
 			return tile
@@ -107,20 +122,20 @@ func get_tile_at_position(pos: Vector2) -> Tile:
 ## Game End
 ## --------------------------
 
-func reveal() -> void:
-	for tile in get_children():
-		tile.reveal()
-
 
 func reveal_mines() -> void:
+	# Reveals all mines, used for game end, to show
+	# user how the board looked.
 	for tile in get_children():
 		if tile.is_hidden and tile.is_mine():
 			tile.reveal()
 
 
 func count_flagged_mines() -> int:
+	# Checks specifically for mines that are properly
+	# flagged. This may be different from total number
+	# of flags.
 	var mine_flagged_count:int = 0
-	
 	for tile in get_children():
 		assert(tile is Tile, "count_flagged_and_reveal_all_mines() encountered invalid child of board")
 		if tile.is_hidden:
@@ -131,6 +146,8 @@ func count_flagged_mines() -> int:
 
 
 func all_hidden_clear() -> bool:
+	# Used to check if everything except flagged tiles are revealed.
+	# Useful for determining if the game is finished.
 	for tile in get_children():
 	# Flagged are still considered hidden but don't count for game end
 		if tile.is_hidden and not tile.is_flagged:
@@ -168,6 +185,7 @@ func _on_mine_revealed() -> void:
 ## --------------------------
 
 func _reveal_neighbors(tile: Tile) -> void:
+	# Recursive helper function used to reveal all connected safe tiles.
 	var neighbors = _get_neighbors(tile)
 	
 	for neighbor in neighbors:
@@ -197,6 +215,7 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 			Events.mine_revealed.emit(tile)
 		elif tile.is_safe():
 			_reveal_neighbors(tile)
+	
 	# Player flagged or unflagged tile
 	elif _game_started and button == MOUSE_BUTTON_RIGHT:
 		if tile.is_flagged:
@@ -206,6 +225,7 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 			_flagged_mines -= 1
 			assert(_flagged_mines >= 0, "_on_tile_pressed caused _flagged mines to go below 0")
 			Events.tile_flagged.emit()
+	
 	# Check for game end:
 	if _flagged_mines == max_mines and all_hidden_clear():
 		Events.game_ended.emit(count_flagged_mines(), max_mines)

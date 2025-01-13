@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="Difficulty" load_steps=2 format=3 uid="uid://hlttgi8hd1gp"]
+
+[ext_resource type="Script" path="res://scenes/Gui/difficulty.gd" id="1_jkkq5"]
+
+[resource]
+script = ExtResource("1_jkkq5")
+rows = 11
+columns = 12
+mines = 15

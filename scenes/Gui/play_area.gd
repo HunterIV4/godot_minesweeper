@@ -1,6 +1,11 @@
 class_name PlayArea
 extends Control
 
+@export var difficulty_easy: Difficulty
+@export var difficulty_normal: Difficulty
+@export var difficulty_hard: Difficulty
+var DIFFICULTY_DEFAULT: Difficulty = load("res://scenes/Gui/default_difficulty.tres")
+
 @onready var mine_counter: Label = %MineCounter
 @onready var time_elapsed: Label = %TimeElapsed
 @onready var message: Label = %Message
@@ -21,12 +26,19 @@ func _ready() -> void:
 	Events.game_over.connect(_on_game_over)
 	Events.time_updated.connect(_on_time_updated)
 	
+	# Set initial board state and hide gameplay UI
 	Events.board_updated.emit(row_slider.value, column_slider.value, mine_slider.value)
 	main_game.hide()
 	
-	row_slider.value = 11
-	column_slider.value = 12
-	mine_slider.value = 15
+	# Ensure a valid default is set for each option
+	if not difficulty_easy:
+		difficulty_easy = DIFFICULTY_DEFAULT
+	if not difficulty_normal:
+		difficulty_normal = DIFFICULTY_DEFAULT
+	if not difficulty_hard:
+		difficulty_hard = DIFFICULTY_DEFAULT
+	
+	_set_difficulty(DIFFICULTY_DEFAULT)
 	update_mine_guess_counter()
 
 ## Game Events
@@ -65,29 +77,28 @@ func _on_start_game_pressed() -> void:
 	menu_options.hide()
 	message.hide()
 	update_mine_guess_counter()
-	
 
 
 func _on_resign_pressed() -> void:
 	Events.mine_revealed.emit()
 
 
+func _set_difficulty(new_difficulty: Difficulty) -> void:
+	row_slider.value = new_difficulty.rows
+	column_slider.value = new_difficulty.columns
+	mine_slider.value = new_difficulty.mines
+
+
 func _on_easy_pressed() -> void:
-	row_slider.value = 10
-	column_slider.value = 10
-	mine_slider.value = 12
+	_set_difficulty(difficulty_easy)
 
 
 func _on_normal_pressed() -> void:
-	row_slider.value = 16
-	column_slider.value = 12
-	mine_slider.value = 25
+	_set_difficulty(difficulty_normal)
 
 
 func _on_hard_pressed() -> void:
-	row_slider.value = 18
-	column_slider.value = 16
-	mine_slider.value = 40
+	_set_difficulty(difficulty_hard)
 
 
 func _on_row_slider_value_changed(value: float) -> void:
