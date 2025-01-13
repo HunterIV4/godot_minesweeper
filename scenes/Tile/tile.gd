@@ -21,6 +21,11 @@ func reveal() -> void:
 	_update_state()
 
 
+func set_flag_state(new_state: bool):
+	is_flagged = new_state
+	_set_flag_state()
+
+
 func enable_input() -> void:
 	_disabled = false
 
@@ -130,7 +135,7 @@ func _gui_input(event: InputEvent) -> void:
 				
 			
 			MOUSE_BUTTON_RIGHT:
-				is_flagged = !is_flagged
-				_set_flag_state()
+				var new_state := !is_flagged
+				set_flag_state(new_state)
 				Events.tile_pressed.emit(self, MouseButton.MOUSE_BUTTON_RIGHT)
 				

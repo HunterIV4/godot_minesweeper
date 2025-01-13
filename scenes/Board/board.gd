@@ -111,10 +111,12 @@ func reveal() -> void:
 	for tile in get_children():
 		tile.reveal()
 
+
 func reveal_mines() -> void:
 	for tile in get_children():
 		if tile.is_hidden and tile.is_mine():
-			pass
+			tile.reveal()
+
 
 func count_flagged_mines() -> int:
 	var mine_flagged_count:int = 0
@@ -126,6 +128,14 @@ func count_flagged_mines() -> int:
 				if tile.is_flagged:
 					mine_flagged_count += 1
 	return mine_flagged_count
+
+
+func all_hidden_clear() -> bool:
+	for tile in get_children():
+	# Flagged are still considered hidden but don't count for game end
+		if tile.is_hidden and not tile.is_flagged:
+			return false
+	return true
 
 
 func reset() -> void:
@@ -150,6 +160,7 @@ func check_win() -> bool:
 
 func _on_mine_revealed() -> void:
 	var correctly_flagged = count_flagged_mines()
+	reveal_mines()
 	Events.game_ended.emit(correctly_flagged, max_mines)
 
 
@@ -173,6 +184,8 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 		if not tile.is_hidden:	# If player is just marking flags, don't start game yet
 			_game_started = true
 			generate_board_mines()
+		else:
+			tile.set_flag_state(false)
 	
 	# Player revealed tile
 	if not tile.is_hidden:
@@ -185,7 +198,7 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 		elif tile.is_safe():
 			_reveal_neighbors(tile)
 	# Player flagged or unflagged tile
-	elif button == MOUSE_BUTTON_RIGHT:
+	elif _game_started and button == MOUSE_BUTTON_RIGHT:
 		if tile.is_flagged:
 			_flagged_mines += 1
 			Events.tile_flagged.emit()
@@ -193,7 +206,9 @@ func _on_tile_pressed(tile: Tile, button: MouseButton) -> void:
 			_flagged_mines -= 1
 			assert(_flagged_mines >= 0, "_on_tile_pressed caused _flagged mines to go below 0")
 			Events.tile_flagged.emit()
-
+	# Check for game end:
+	if _flagged_mines == max_mines and all_hidden_clear():
+		Events.game_ended.emit(count_flagged_mines(), max_mines)
 
 func _on_board_updated(new_rows: int, new_cols: int, new_mines: int):
 	# Set new dimensions and recreate board

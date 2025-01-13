@@ -105,7 +105,8 @@ func _on_mine_slider_value_changed(value: float) -> void:
 ## --------------------------
 
 func update_mine_guess_counter() -> void:
-	mine_counter.text = "Mines: %s" % (board.max_mines - board.get_flagged_mine_count())
+	var mine_count = max(board.max_mines - board.get_flagged_mine_count(), 0)
+	mine_counter.text = "Mines: %s" % (mine_count)
 
 
 func _on_time_updated(minutes: int, seconds: int) -> void:
